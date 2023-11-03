@@ -2,6 +2,8 @@
 
 ⚠️ Under construction ⚠️
 
+Acest document trebuie convertit in HTML eventual.
+
 ## Descriere
 
 Tema proiectului este o aplicație web pentru realizarea unei reviste online.
