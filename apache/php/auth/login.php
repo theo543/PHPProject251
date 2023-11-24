@@ -12,7 +12,7 @@ function register_auth_endpoints(Router $r) {
     $r->get("/logout", view("logout")->callback());
     $debugmode = include("debugmode.secrets.php");
     if($debugmode["allow_root_create"]) {
-        $r->post("/create_root_user", fn() => root_user_creation_endpoint($debugmode["allow_root_create_secret_code"]));
+        $r->post("/create_root_user", fn() => root_user_creation_endpoint($debugmode["username"], $debugmode["email"], $debugmode["password"]));
         $r->get("/create_root_user", view("create_root_user")->callback());
     }
 }

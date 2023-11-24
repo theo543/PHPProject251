@@ -17,26 +17,7 @@ class Account {
         $this->is_editor = $is_editor;
         $this->is_author = $is_author;
     }
-    public function create_account(string $password): bool {
-        $db = connect_to_db();
-        $db->begin_transaction();
-        $bcrypt_opts = [
-            "cost" => 12,
-        ];
-        $bcrypt_password = password_hash($password, PASSWORD_BCRYPT, $bcrypt_opts);
-        $query = $db->prepare("INSERT INTO users (name, email, bcrypt_password, is_admin, is_editor, is_author) VALUES (?, ?, ?, ?, ?, ?)");
-        $query->bind_param("ssssss", $this->name, $this->email, $bcrypt_password, $this->is_admin, $this->is_editor, $this->is_author);
-        $result = $query->execute();
-        if($result === false) {
-            $db->rollback();
-            return false;
-        }
-        $last_auto_increment = $db->prepare("SELECT LAST_INSERT_ID() AS id");
-        $last_auto_increment->execute();
-        $this->id = $last_auto_increment->get_result()->fetch_assoc()["id"];
-        $db->commit();
-        return true;
-    }
+
 }
 
 function get_account(int $id): Account | null {
@@ -50,4 +31,24 @@ function get_account(int $id): Account | null {
         return null;
     }
     return new Account($row["user_id"], $row["name"], $row["email"], $row["is_admin"], $row["is_editor"], $row["is_author"]);
+}
+
+function create_account(string $name, string $email, string $password, bool $is_admin, bool $is_editor, bool $is_author): null | Account {
+    $db = connect_to_db();
+    $db->begin_transaction();
+    $bcrypt_opts = [
+        "cost" => 12,
+    ];
+    $bcrypt_password = password_hash($password, PASSWORD_BCRYPT, $bcrypt_opts);
+    $query = $db->prepare("INSERT INTO users (name, email, bcrypt_password, is_admin, is_editor, is_author) VALUES (?, ?, ?, ?, ?, ?)");
+    $result = $query->execute([$name, $email, $bcrypt_password, $is_admin, $is_editor, $is_author]);
+    if($result === false) {
+        $db->rollback();
+        return null;
+    }
+    $last_auto_increment = $db->prepare("SELECT LAST_INSERT_ID() AS id");
+    $last_auto_increment->execute();
+    $id = $last_auto_increment->get_result()->fetch_assoc()["id"];
+    $db->commit();
+    return new Account($id, $name, $email, $is_admin, $is_editor, $is_author);
 }

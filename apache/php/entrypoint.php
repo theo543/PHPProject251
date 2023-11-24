@@ -7,8 +7,7 @@ header("Cache-Control: post-check=0, pre-check=0", false);
 header("Pragma: no-cache");
 
 require_once "router/Router.php";
-require_once "endpoints/test_endpoints.php";
-require_once "endpoints/404.php";
+require_once "test_endpoints.php";
 require_once "auth/login.php";
 
 $pre_auth = new Router;

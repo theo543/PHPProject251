@@ -1,7 +1,7 @@
 <form action="/create_root_user" method="post">
-    <label>Root user name: <input type="text" name="username" /></label>
-    <label>Root user password: <input type="password" name="password" /></label>
-    <label>Root user email: <input type="email" name="email" /></label>
-    <label>Secret code: <input type="password" name="secret_code" /></label>
+    <p> Note: this form is controlled by a file stored on the server to allow the creation of an initial root user. </p>
+    <p> After creating the root user, you should disable this form. </p>
+    <p> You must enter the password from debugmode.secrets.php to create the root user. </p>
+    <label> Password: <input type="password" name="password" /> </label>
     <input type="submit" value="Create root user" />
 </form>
