@@ -9,6 +9,7 @@ header("Pragma: no-cache");
 require_once "router/Router.php";
 require_once "test_endpoints.php";
 require_once "auth/login.php";
+require_once "auth/create_invite_link_endpoint.php";
 
 $pre_auth = new Router;
 
@@ -29,6 +30,8 @@ if($account === null) {
 $post_auth = new Router;
 
 $post_auth->get("/", view_with_account("index", $account)->callback());
+$post_auth->get("/create_invite_link", view("create_invite_link")->callback());
+$post_auth->post("/create_invite_link", fn() => create_invite_link_endpoint($account));
 
 if(!$post_auth->run()) {
     http_response_code(404);

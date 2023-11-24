@@ -18,3 +18,11 @@ Table sessions {
 }
 
 Ref: sessions.user_id > users.user_id [delete: cascade]
+
+Table invite_tokens {
+    token_id int [primary key, increment]
+    token binary(255) [not null]
+    author boolean [not null, default: false]
+    editor boolean [not null, default: false]
+    admin boolean [not null, default: false]
+}
