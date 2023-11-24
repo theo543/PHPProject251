@@ -1,6 +1,6 @@
 <?php
 
-require_once("Router.php");
+require_once "router/Router.php";
 
 function register_test_endpoints(Router $r) {
     $r->get("/ping_php_router_get", function() {

@@ -2,9 +2,9 @@
 
 set_include_path(get_include_path() . PATH_SEPARATOR . dirname(__FILE__));
 
-require_once("Router.php");
-require_once("test_endpoints.php");
-require_once("404.php");
+require_once "router/Router.php";
+require_once "endpoints/test_endpoints.php";
+require_once "endpoints/404.php";
 
 $r = new Router;
 
