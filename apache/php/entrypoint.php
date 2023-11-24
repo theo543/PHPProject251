@@ -28,12 +28,11 @@ if(!check_session()) {
 
 $post_auth = new Router;
 
-$post_auth->all("/php_ping_session", function() {
-    echo "If you are reading this, you successfully used the root user create endpoint. (normal user signup not implemented)";
+$post_auth->get("/", function() {
+    echo "Hi! You're logged in. You must have used the create root user endpoint to get an account, since there's no way to register yet.";
 });
 
 if($post_auth->run()) {
     exit;
 }
 
-handle_404();
