@@ -19,32 +19,27 @@ class Account {
     }
     public function create_account(string $password): void {
         $db = connect_to_db();
+        $db->begin_transaction();
         $bcrypt_opts = [
             "cost" => 12,
         ];
         $bcrypt_password = password_hash($password, PASSWORD_BCRYPT, $bcrypt_opts);
-        $query = $db->prepare("INSERT INTO accounts (name, email, bcrypt_password, is_admin, is_editor, is_author) VALUES (?, ?, ?, ?, ?, ?) RETURNING id");
-        if(!$query) {
-            die("Failed to prepare query: (" . $db->errno . ") " . $db->error);
-        }
+        $query = $db->prepare("INSERT INTO users (name, email, bcrypt_password, is_admin, is_editor, is_author) VALUES (?, ?, ?, ?, ?, ?)");
         $query->bind_param("ssssss", $this->name, $this->email, $bcrypt_password, $this->is_admin, $this->is_editor, $this->is_author);
-        $query->execute();
-        $result = $query->get_result();
-        $row = $result->fetch_assoc();
-        if($row === null) {
+        $result = $query->execute();
+        if($result === false) {
             die("Failed to create account");
         }
-        $this->id = $row["id"];
+        $last_auto_increment = $db->prepare("SELECT LAST_INSERT_ID() AS id");
+        $last_auto_increment->execute();
+        $this->id = $last_auto_increment->get_result()->fetch_assoc()["id"];
+        $db->commit();
     }
-    
 }
 
 function get_account(int $id): Account {
     $db = connect_to_db();
     $query = $db->prepare("SELECT id, name, email, is_admin, is_editor, is_author FROM accounts WHERE id = ?");
-    if(!$query) {
-        die("Failed to prepare query: (" . $db->errno . ") " . $db->error);
-    }
     $query->bind_param("i", $id);
     $query->execute();
     $result = $query->get_result();

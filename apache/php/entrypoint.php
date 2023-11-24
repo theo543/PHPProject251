@@ -2,6 +2,10 @@
 
 set_include_path(get_include_path() . PATH_SEPARATOR . dirname(__FILE__));
 
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Cache-Control: post-check=0, pre-check=0", false);
+header("Pragma: no-cache");
+
 require_once "router/Router.php";
 require_once "endpoints/test_endpoints.php";
 require_once "endpoints/404.php";
@@ -24,8 +28,8 @@ if(!check_session()) {
 
 $post_auth = new Router;
 
-$post_auth->all("/tmp_test", function() {
-    echo "This should be currently inaccessible as logging in is not yet implemented";
+$post_auth->all("/php_ping_session", function() {
+    echo "If you are reading this, you successfully used the root user create endpoint. (normal user signup not implemented)";
 });
 
 if($post_auth->run()) {
