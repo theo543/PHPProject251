@@ -52,8 +52,12 @@ function execute($query, $params = [], $db = null): int | null {
     if($db === null) {
         $db = connect_to_db();
     }
-    $query = $db->prepare($query);
-    $result = $query->execute($params);
+    try {
+        $query = $db->prepare($query);
+        $result = $query->execute($params);
+    } catch(Exception $e) {
+        return null;
+    }
     if($result === false) {
         return null;
     }

@@ -28,24 +28,25 @@ function get_account(int $id): Account | null {
     return new Account($row["user_id"], $row["name"], $row["email"], $row["is_admin"], $row["is_editor"], $row["is_author"]);
 }
 
-function create_account(string $name, string $email, string $password, bool $is_admin, bool $is_editor, bool $is_author): null | Account {
-    $db = connect_to_db();
-    $db->begin_transaction();
+function create_account(string $name, string $email, string $password, bool $is_admin, bool $is_editor, bool $is_author, mysqli | null $db = null): null | Account {
+    if($db === null) {
+        $db = connect_to_db();
+    }
     $bcrypt_opts = [
         "cost" => 12,
     ];
     $bcrypt_password = password_hash($password, PASSWORD_BCRYPT, $bcrypt_opts);
-    $result = execute("INSERT INTO users (name, email, bcrypt_password, is_admin, is_editor, is_author) VALUES (?, ?, ?, ?, ?, ?)", [$name, $email, $bcrypt_password, $is_admin, $is_editor, $is_author], $db);
+    function btoi(bool $b): int {
+        return $b ? 1 : 0;
+    }
+    $result = execute("INSERT INTO users (name, email, bcrypt_password, is_admin, is_editor, is_author) VALUES (?, ?, ?, ?, ?, ?)", [$name, $email, $bcrypt_password, btoi($is_admin), btoi($is_editor), btoi($is_author)], $db);
     if($result === null) {
-        $db->rollback();
         return null;
     }
     $id = fetch_one("SELECT LAST_INSERT_ID() AS id", [], $db);
     if($id === null) {
-        $db->rollback();
         return null;
     }
     $id = $id["id"];
-    $db->commit();
     return new Account($id, $name, $email, $is_admin, $is_editor, $is_author);
 }
