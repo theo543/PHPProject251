@@ -2,5 +2,6 @@
     <label>Root user name: <input type="text" name="username" /></label>
     <label>Root user password: <input type="password" name="password" /></label>
     <label>Root user email: <input type="email" name="email" /></label>
+    <label>Secret code: <input type="password" name="secret_code" /></label>
     <input type="submit" value="Create root user" />
 </form>

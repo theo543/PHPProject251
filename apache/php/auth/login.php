@@ -45,10 +45,13 @@ function logout_endpoint():void {
     }
 }
 
-function root_user_creation_endpoint():void {
+function root_user_creation_endpoint($secret_code):void {
     $db = connect_to_db();
-    if(!isset($_POST["username"]) || !isset($_POST["password"]) || !isset($_POST["email"])) {
+    if(!isset($_POST["username"]) || !isset($_POST["password"]) || !isset($_POST["email"]) || !isset($_POST["secret_code"])) {
         die("Missing username or password");
+    }
+    if($_POST["secret_code"] !== $secret_code) {
+        die("Invalid secret code");
     }
     $username = $_POST["username"];
     $password = $_POST["password"];
@@ -67,7 +70,7 @@ function register_auth_endpoints(Router $r) {
     $r->get("/logout", create_view_callback("logout"));
     $debugmode = include("debugmode.secrets.php");
     if($debugmode["allow_root_create"]) {
-        $r->post("/create_root_user", fn() => root_user_creation_endpoint());
+        $r->post("/create_root_user", fn() => root_user_creation_endpoint($debugmode["allow_root_create_secret_code"]));
         $r->get("/create_root_user", create_view_callback("create_root_user"));
     }
 }
