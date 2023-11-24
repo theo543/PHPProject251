@@ -12,7 +12,9 @@ Table users {
 
 Table sessions {
     session_id int [primary key, increment]
-    user_id int [not null, ref: > users.user_id]
+    user_id int [not null]
     token binary(255) [not null]
     expiry timestamp
 }
+
+Ref: sessions.user_id > users.user_id [delete: cascade]
