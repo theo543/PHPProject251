@@ -5,11 +5,12 @@ set_include_path(get_include_path() . PATH_SEPARATOR . dirname(__FILE__));
 require_once "router/Router.php";
 require_once "endpoints/test_endpoints.php";
 require_once "endpoints/404.php";
-require_once "auth/check_session.php";
+require_once "auth/login.php";
 
 $pre_auth = new Router;
 
 register_test_endpoints($pre_auth);
+register_auth_endpoints($pre_auth);
 
 if($pre_auth->run()) {
     exit;

@@ -4,7 +4,7 @@ Table users {
     user_id int [primary key]
     name varchar(100)
     email varchar(100)
-    bcrypt_password binary(60)
+    bcrypt_password varchar(255)
     is_admin boolean
     is_editor boolean
     is_author boolean
