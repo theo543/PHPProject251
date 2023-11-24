@@ -30,7 +30,7 @@ function create_session(int $user_id): void {
 function end_session(string $user_id, string $token): bool {
     $db = connect_to_db();
     $query = $db->prepare("DELETE FROM sessions WHERE user_id = ? AND token = FROM_BASE64(?)");
-    $query->bind_param("is", $session_user, $session_token);
+    $query->bind_param("is", $user_id, $token);
     $success = $query->execute();
     return $success && ($db->affected_rows !== 0);
 }
