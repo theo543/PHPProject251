@@ -21,12 +21,7 @@ class Account {
 }
 
 function get_account(int $id): Account | null {
-    $db = connect_to_db();
-    $query = $db->prepare("SELECT user_id, name, email, is_admin, is_editor, is_author FROM users WHERE user_id = ?");
-    $query->bind_param("i", $id);
-    $query->execute();
-    $result = $query->get_result();
-    $row = $result->fetch_assoc();
+    $row = fetch_one("SELECT user_id, name, email, is_admin, is_editor, is_author FROM users WHERE user_id = ?", [$id]);
     if($row === null) {
         return null;
     }
@@ -40,15 +35,17 @@ function create_account(string $name, string $email, string $password, bool $is_
         "cost" => 12,
     ];
     $bcrypt_password = password_hash($password, PASSWORD_BCRYPT, $bcrypt_opts);
-    $query = $db->prepare("INSERT INTO users (name, email, bcrypt_password, is_admin, is_editor, is_author) VALUES (?, ?, ?, ?, ?, ?)");
-    $result = $query->execute([$name, $email, $bcrypt_password, $is_admin, $is_editor, $is_author]);
-    if($result === false) {
+    $result = execute("INSERT INTO users (name, email, bcrypt_password, is_admin, is_editor, is_author) VALUES (?, ?, ?, ?, ?, ?)", [$name, $email, $bcrypt_password, $is_admin, $is_editor, $is_author], $db);
+    if($result === null) {
         $db->rollback();
         return null;
     }
-    $last_auto_increment = $db->prepare("SELECT LAST_INSERT_ID() AS id");
-    $last_auto_increment->execute();
-    $id = $last_auto_increment->get_result()->fetch_assoc()["id"];
+    $id = fetch_one("SELECT LAST_INSERT_ID() AS id", [], $db);
+    if($id === null) {
+        $db->rollback();
+        return null;
+    }
+    $id = $id["id"];
     $db->commit();
     return new Account($id, $name, $email, $is_admin, $is_editor, $is_author);
 }
