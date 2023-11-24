@@ -21,9 +21,8 @@ if($pre_auth->run()) {
 }
 
 if(!check_session()) {
-    // TODO redirect to the actual page to login once it's implemented
-    http_response_code(403);
-    die("Not logged in");
+    header("Location: /auth");
+    exit;
 }
 
 $post_auth = new Router;
@@ -32,7 +31,7 @@ $post_auth->get("/", function() {
     echo "Hi! You're logged in. You must have used the create root user endpoint to get an account, since there's no way to register yet.";
 });
 
-if($post_auth->run()) {
-    exit;
+if(!$post_auth->run()) {
+    http_response_code(404);
+    echo "404 Not Found";
 }
-

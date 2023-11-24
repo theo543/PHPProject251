@@ -39,7 +39,7 @@ function logout_endpoint():void {
         }
         setcookie("session_token", "", time() - 3600, "/");
         setcookie("session_user_id", "", time() - 3600, "/");
-        echo "Session deleted from database and cleared from your browser.";
+        header("Location: /");
     } else {
         echo "Token or ID not specified.";
     }
