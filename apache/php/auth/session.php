@@ -1,20 +1,24 @@
 <?php
 
 require_once "database/db.php";
+require_once "auth/account.php";
 
-function check_session(): bool {
+function check_session(): null | Account {
     $db = connect_to_db();
     if(!isset($_COOKIE["session_token"]) || !isset($_COOKIE["session_user_id"])) {
-        return false;
+        return null;
     }
     $session_token = $_COOKIE["session_token"];
     $session_user = $_COOKIE["session_user_id"];
-    $query = $db->prepare("SELECT session_id FROM sessions WHERE user_id = ? AND expiry > NOW() AND token = FROM_BASE64(?)");
+    $query = $db->prepare("SELECT user_id FROM sessions WHERE user_id = ? AND expiry > NOW() AND token = FROM_BASE64(?)");
     $query->bind_param("is", $session_user, $session_token);
     $query->execute();
     $result = $query->get_result();
     $row = $result->fetch_assoc();
-    return $row !== null;
+    if($row === null || $row["user_id"] !== intval($session_user)) {
+        return null;
+    }
+    return get_account($session_user);
 }
 
 function create_session(int $user_id): void {

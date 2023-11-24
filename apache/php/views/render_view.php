@@ -27,11 +27,16 @@ class View {
         extract($this->view_data);
         require "views/" . $this->view_name . ".view.php";
     }
+
+    public function callback() {
+        return function() {
+            $this->render();
+        };    
+    }
 }
 
-function create_view_callback(string $view_name): callable {
-    return function() use ($view_name) {
-        $view = new View($view_name);
-        $view->render();
-    };
+function view_with_account(string $view_name, Account $account): View {
+    $view = new View($view_name);
+    $view->set("account", $account);
+    return $view;
 }

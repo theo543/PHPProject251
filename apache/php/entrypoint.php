@@ -20,7 +20,9 @@ if($pre_auth->run()) {
     exit;
 }
 
-if(!check_session()) {
+$account = check_session();
+
+if($account === null) {
     header("Location: /auth");
     exit;
 }
