@@ -29,9 +29,7 @@ if($account === null) {
 
 $post_auth = new Router;
 
-$post_auth->get("/", function() {
-    echo "Hi! You're logged in. You must have used the create root user endpoint to get an account, since there's no way to register yet.";
-});
+$post_auth->get("/", view_with_account("index", $account)->callback());
 
 if(!$post_auth->run()) {
     http_response_code(404);

@@ -70,12 +70,12 @@ function root_user_creation_endpoint($secret_code):void {
 
 function register_auth_endpoints(Router $r) {
     $r->post("/auth", fn() => login_endpoint());
-    $r->get("/auth", (new View("auth"))->callback());
+    $r->get("/auth", view("auth")->callback());
     $r->post("/logout", fn() => logout_endpoint());
-    $r->get("/logout", (new View("logout"))->callback());
+    $r->get("/logout", view("logout")->callback());
     $debugmode = include("debugmode.secrets.php");
     if($debugmode["allow_root_create"]) {
         $r->post("/create_root_user", fn() => root_user_creation_endpoint($debugmode["allow_root_create_secret_code"]));
-        $r->get("/create_root_user", (new View("create_root_user"))->callback());
+        $r->get("/create_root_user", view("create_root_user")->callback());
     }
 }

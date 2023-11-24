@@ -6,7 +6,9 @@ class View {
 
     public function __construct(string $view_name) {
         $this->view_name = $view_name;
-        $this->view_data = [];
+        $this->view_data = array("eh" => function (string $str): string {
+            return htmlspecialchars($str, ENT_QUOTES | ENT_HTML5);
+        });
     }
 
     public function set(string $key, $value): void {
@@ -19,12 +21,9 @@ class View {
         }
     }
 
-    private function eh(string $str): string {
-        return htmlspecialchars($str, ENT_QUOTES | ENT_HTML5);
-    }
-
     public function render(): void {
         extract($this->view_data);
+        $view_data = $this->view_data;
         require "views/" . $this->view_name . ".view.php";
     }
 
@@ -39,4 +38,8 @@ function view_with_account(string $view_name, Account $account): View {
     $view = new View($view_name);
     $view->set("account", $account);
     return $view;
+}
+
+function view(string $view_name): View {
+    return new View($view_name);
 }
