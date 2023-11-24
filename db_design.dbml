@@ -1,0 +1,18 @@
+// Docs: https://dbml.dbdiagram.io/docs
+
+Table users {
+    user_id int [primary key]
+    name varchar(100)
+    email varchar(100)
+    bcrypt_password binary(60)
+    is_admin boolean
+    is_editor boolean
+    is_author boolean
+}
+
+Table sessions {
+    session_id int [primary key]
+    user_id int [ref: > users.user_id]
+    token binary(255)
+    expiry timestamp
+}
