@@ -14,7 +14,17 @@ require_once "auth/create_invite_link_endpoint.php";
 $pre_auth = new Router;
 
 register_test_endpoints($pre_auth);
-register_auth_endpoints($pre_auth);
+
+$pre_auth_captcha_required = new Router;
+register_auth_endpoints($pre_auth_captcha_required);
+$pre_auth_captcha_required->add_post_interceptor(function(): bool {
+    if(!validate_post_request_recaptcha()) {
+        echo "Invalid captcha";
+        return true;
+    }
+    return false;
+});
+$pre_auth->add_subrouter($pre_auth_captcha_required);
 
 if($pre_auth->run()) {
     exit;
