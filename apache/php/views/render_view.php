@@ -1,5 +1,7 @@
 <?php
 
+require_once "auth/recaptcha.php";
+
 class View {
     private $view_name;
     private $view_data;
@@ -8,6 +10,9 @@ class View {
         $this->view_name = $view_name;
         $this->view_data = array("eh" => function (string $str): string {
             return htmlspecialchars($str, ENT_QUOTES | ENT_HTML5);
+        },
+        "recaptcha_form_element" => function (): void {
+            echo get_recaptcha_html();
         });
     }
 
