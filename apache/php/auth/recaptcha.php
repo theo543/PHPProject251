@@ -1,9 +1,11 @@
 <?php
 
+require_once "load_config_file.php";
+
 function get_recaptcha_keys() {
     static $keys = null;
     if($keys === null) {
-        $keys = require dirname(__FILE__) . "/recaptcha_keys.secrets.php";
+        $keys = load_config_file(dirname(__FILE__) . "/recaptcha_keys.secrets.php", array("site-key", "secret-key"));
     }
     return $keys;
 }
