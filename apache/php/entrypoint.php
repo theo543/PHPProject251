@@ -29,6 +29,7 @@ if($account === null) {
 
 $post_auth = new Router;
 
+register_logout_endpoints($post_auth);
 $post_auth->get("/", view_with_account("index", $account)->callback());
 $post_auth->get("/create_invite_link", view("create_invite_link")->callback());
 $post_auth->post("/create_invite_link", fn() => create_invite_link_endpoint($account));
