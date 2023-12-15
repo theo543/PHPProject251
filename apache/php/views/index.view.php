@@ -1,5 +1,10 @@
-<p>Hi, user <?= $eh($account->name) ?>!</p>
-<?php view("logout")->render() ?>
-<?php if($account->is_admin): ?>
-    <a href="/create_invite_link">Create invite link</a>
-<?php endif ?>
+###MIXIN_NEST(base)###
+    ###MIXIN(header)###
+    <body>
+        <p>Hi, user {{{$account->name}}} ?>!</p>
+        ###MIXIN(logout)###
+        ###IF($account->is_admin)###
+            <a href="/create_invite_link">Create invite link</a>
+        ###ENDIF###
+    </body>
+###END_NEST###
