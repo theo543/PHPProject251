@@ -44,7 +44,7 @@ $post_auth = new Router;
 
 $csrf = bind_generate_csrf_token($validated_account->session_id, $account->id);
 
-register_logout_endpoints($post_auth);
+register_logout_endpoints($post_auth, $csrf);
 $post_auth->get("/", view_with_account("index", $account)->set('csrf', $csrf)->callback());
 $post_auth->get("/create_invite_link", view("create_invite_link")->set('csrf', $csrf)->callback());
 $post_auth->post("/create_invite_link", fn() => create_invite_link_endpoint($account));

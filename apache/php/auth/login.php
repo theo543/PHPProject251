@@ -29,6 +29,7 @@ function register_auth_endpoints(Router $r) {
     $r->get("/invite", view("invite")->set_many($recaptcha)->callback());
 }
 
-function register_logout_endpoints(Router $r) {
+function register_logout_endpoints(Router $r, callable $csrf) {
+    $r->get("/logout", view("logout_full")->set('csrf', $csrf)->callback());
     $r->post("/logout", fn() => logout_endpoint());
 }
