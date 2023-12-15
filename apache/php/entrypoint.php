@@ -10,6 +10,7 @@ require_once "router/Router.php";
 require_once "test_endpoints.php";
 require_once "auth/login.php";
 require_once "auth/create_invite_link_endpoint.php";
+require_once "auth/csrf.php";
 
 $pre_auth = new Router;
 
@@ -30,19 +31,34 @@ if($pre_auth->run()) {
     exit;
 }
 
-$account = check_session();
+$validated_account = check_session();
 
 if($account === null) {
     header("Location: /auth");
     exit;
 }
 
+$account = $validated_account->account;
+
 $post_auth = new Router;
 
+$csrf = bind_generate_csrf_token($validated_account->session_id, $account->id);
+
 register_logout_endpoints($post_auth);
-$post_auth->get("/", view_with_account("index", $account)->callback());
-$post_auth->get("/create_invite_link", view("create_invite_link")->callback());
+$post_auth->get("/", view_with_account("index", $account)->set('csrf', $csrf)->callback());
+$post_auth->get("/create_invite_link", view("create_invite_link")->set('csrf', $csrf)->callback());
 $post_auth->post("/create_invite_link", fn() => create_invite_link_endpoint($account));
+$post_auth->add_post_interceptor(function() use ($validated_account, $account): bool {
+    if(!isset($_POST["csrf-token"]) || !isset($_POST["csrf-token-hmac"])) {
+        echo "Missing CSRF token";
+        return true;
+    }
+    if(!validate_csrf_token($validated_account->session_id, $account->id, $_POST["csrf-token"], $_POST["csrf-token-hmac"])) {
+        echo "Invalid CSRF token";
+        return true;
+    }
+    return false;
+});
 
 if(!$post_auth->run()) {
     http_response_code(404);
