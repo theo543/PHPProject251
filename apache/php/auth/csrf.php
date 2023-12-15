@@ -13,9 +13,6 @@ function get_secret_csrf_key(): string {
     static $secret_key = null;
     if($secret_key === null) {
         $secret_key = load_config_file(dirname(__FILE__) . '/csrf_secret_key.secrets.php', array('csrf-secret-key'))['csrf-secret-key'];
-        if(!preg_match('/^[a-zA-Z0-9_-]+$/', $secret_key)) {
-            throw new Exception("CSRF secret key must be alphanumeric with dashes and underscores in order to be embedded in <input type='hidden'> tags without corruption.");
-        }
     }
     return $secret_key;
 }
