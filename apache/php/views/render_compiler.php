@@ -74,9 +74,9 @@ function compile_view(string $path, string $mixin_nested_view = "", string|null 
                 $interp_content = $matches[2];
                 switch($interp_flag) {
                     case "h": // html escape
-                        return "<?= htmlspecialchars($interp_content, ENT_QUOTES | ENT_HTML5); ?>";
+                        return "<?= htmlspecialchars($interp_content, ENT_QUOTES | ENT_HTML5) ?>";
                     case "!" : // no escape
-                        return "<?= $interp_content; ?>";
+                        return "<?= $interp_content ?>";
                     default:
                         throw new ViewCompileException("Invalid interpolation flag '$interp_flag' in interpolation $matches[0] at line $linenum");
                 }

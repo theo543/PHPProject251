@@ -33,7 +33,7 @@ if($pre_auth->run()) {
 
 $validated_account = check_session();
 
-if($account === null) {
+if($validated_account === null) {
     header("Location: /auth");
     exit;
 }

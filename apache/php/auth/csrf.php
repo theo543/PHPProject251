@@ -12,7 +12,7 @@ class CSRFToken {
 function get_secret_csrf_key(): string {
     static $secret_key = null;
     if($secret_key === null) {
-        $secret_key = load_config_file(dirname(__FILE__) . '/csrf-secret-key.secrets.php', array('csrf-secret-key'))['csrf-secret-key'];
+        $secret_key = load_config_file(dirname(__FILE__) . '/csrf_secret_key.secrets.php', array('csrf-secret-key'))['csrf-secret-key'];
         if(!preg_match('/^[a-zA-Z0-9_-]+$/', $secret_key)) {
             throw new Exception("CSRF secret key must be alphanumeric with dashes and underscores in order to be embedded in <input type='hidden'> tags without corruption.");
         }
@@ -36,6 +36,7 @@ function validate_csrf_token(int $session_id, int $user_id, string $token, strin
 function bind_generate_csrf_token(int $session_id, int $user_id): callable {
     return function(string|null $token = null) use ($session_id, $user_id): string {
         $csrf_token = generate_csrf_token($session_id, $user_id, $token);
-        return '<input type="hidden" name="csrf-token" value="' . $csrf_token->token . '">';
+        return '<input type="hidden" name="csrf-token" value="' . $csrf_token->token . '">'
+            .  '<input type="hidden" name="csrf-token-hmac" value="' . $csrf_token->token_hmac . '">';
     };
 }

@@ -6,6 +6,7 @@
             <label> Should be author: <input type="checkbox" name="author" /> </label>
             <label> Should be editor: <input type="checkbox" name="editor" /> </label>
             <label> Should be admin: <input type="checkbox" name="admin" /> </label>
+            {{{!|$csrf()}}}
             <input type="submit" value="Create invite link" />
         </form>
     </body>
