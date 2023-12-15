@@ -26,12 +26,14 @@ class View {
 
     public function render(): void {
         $path = "views/" . $this->view_name . ".view.php";
-        $compiled = "views/compiled/" . $this->view_name . ".view.php";
-        if(!file_exists($compiled)) {
-            compile_view($path, $compiled);
+        $os_tmpdir = sys_get_temp_dir();
+        if($os_tmpdir[strlen($os_tmpdir) - 1] === "/") {
+            $os_tmpdir = substr($os_tmpdir, 0, strlen($os_tmpdir) - 1);
         }
+        $compiled = $os_tmpdir . "/views_compiled/" . $this->view_name . ".view.php";
+        ensure_compiled($path, $compiled);
         extract($this->view_data);
-        require "views/compiled/" . $this->view_name . ".view.php";
+        require $compiled;
     }
 
     public function callback() {

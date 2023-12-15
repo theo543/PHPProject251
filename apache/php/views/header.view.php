@@ -1,9 +1,13 @@
 <head>
     <meta charset="UTF-8">
-    <title>{{{$title}}}</title>
-    <link rel="stylesheet" href="css/style.css">
+    ###IF(isset($title))###
+        <title>{{{$title}}}</title>
+    ###ELSE###
+        <title>PHP Project</title>
+    ###ENDIF###
+    <!-- <link rel="stylesheet" href="/css/style.css" /> TODO style website -->
     ###IF(isset($recaptcha))###
-        {{{$recaptcha}}}
+        <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     ###ENDIF###
     ###MIXIN_POINT###
 </head>
