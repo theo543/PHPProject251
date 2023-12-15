@@ -19,8 +19,7 @@ function compile_view(string $path, string $mixin_nested_view = "", string|null 
     $begin_nest_expr = "/^\s*###MIXIN_NEST\((.*)\)###$/";
     $end_nest_expr = "/^\s*###END_NEST###$/";
     $mixin_point_expr = "/^\s*###MIXIN_POINT###$/";
-    $interpolate_expr = "/\{\{\{(.*)\}\}\}/";
-    $unescaped_expr = "/\{\{\{!(.*)\}\}\}/";
+    $interpolate_expr = "/\{\{\{(?:([\w!]*)\|)?(.*)\}\}\}/";
     $if_expr = "/^\s*###IF\((.*)\)###$/";
     $else_expr = "/^\s*###ELSE###$/";
     $endif_expr = "/^\s*###ENDIF###$/";
@@ -36,8 +35,6 @@ function compile_view(string $path, string $mixin_nested_view = "", string|null 
     $linenum = 0;
     while($line = fgets($file)) {
         $linenum++;
-        $line = preg_replace($unescaped_expr, "<?= $1; ?>", $line);
-        $line = preg_replace($interpolate_expr, "<?= htmlspecialchars($1, ENT_QUOTES | ENT_HTML5, 'UTF-8'); ?>", $line);
         if(preg_match($if_expr, $line, $matches)) {
             $append("<?php if($matches[1]): ?>");
         } else if(preg_match($else_expr, $line)) {
@@ -51,20 +48,39 @@ function compile_view(string $path, string $mixin_nested_view = "", string|null 
             if(count($buffer_stack) === 1) {
                 throw new ViewCompileException("Unmatched ###END_NEST### at line $linenum");
             }
+            $nested_view_name = null;
             try {
-                $append(compile_view(array_pop($mixin_stack), array_pop($buffer_stack), $path));
+                $mixin_content = array_pop($buffer_stack);
+                $nested_view_name = array_pop($mixin_stack);
+                $append(compile_view($nested_view_name, $mixin_content, $path));
             } catch(ViewCompileException $e) {
-                throw new ViewCompileException("Error compiling nested view closed at line $linenum: " . $e->getMessage());
+                throw new ViewCompileException("Error compiling nested view '$nested_view_name' closed at line $linenum: " . $e->getMessage());
             }
         } else if(preg_match($mixin_expr, $line, $matches)) {
             try {
-                $append(compile_view($matches[1], "", $path));
+                $imported_view_name = $matches[1];
+                $append(compile_view($imported_view_name, "", $path));
             } catch(ViewCompileException $e) {
-                throw new ViewCompileException("Error compiling imported view at line $linenum: " . $e->getMessage());
+                throw new ViewCompileException("Error compiling imported view '$imported_view_name' at line $linenum: " . $e->getMessage());
             }
         } else if(preg_match($mixin_point_expr, $line)) {
             $append($mixin_nested_view);
         } else {
+            $line = preg_replace_callback($interpolate_expr, function(array $matches) use ($linenum) {
+                $interp_flag = $matches[1];
+                if($interp_flag === "") {
+                    $interp_flag = 'h';
+                }
+                $interp_content = $matches[2];
+                switch($interp_flag) {
+                    case "h": // html escape
+                        return "<?= htmlspecialchars($interp_content, ENT_QUOTES | ENT_HTML5); ?>";
+                    case "!" : // no escape
+                        return "<?= $interp_content; ?>";
+                    default:
+                        throw new ViewCompileException("Invalid interpolation flag '$interp_flag' in interpolation $matches[0] at line $linenum");
+                }
+            }, $line);
             $append($line);
         }
     }
