@@ -15,14 +15,14 @@ function compile_view(string $path, string $mixin_nested_view = "", string|null 
             throw new ViewCompileException("Attempted to import extensionless file: '$path' despite not having a parent view path for relative imports.");
         }
     }
-    $mixin_expr = "/^\s*###MIXIN\((.*)\)###$/";
-    $begin_nest_expr = "/^\s*###MIXIN_NEST\((.*)\)###$/";
-    $end_nest_expr = "/^\s*###END_NEST###$/";
-    $mixin_point_expr = "/^\s*###MIXIN_POINT###$/";
-    $interpolate_expr = "/\{\{\{(?:([\w!]*)\|)?(.*)\}\}\}/";
-    $if_expr = "/^\s*###IF\((.*)\)###$/";
-    $else_expr = "/^\s*###ELSE###$/";
-    $endif_expr = "/^\s*###ENDIF###$/";
+    $mixin_expr = "/^\s*###MIXIN\((.*)\)###$/u";
+    $begin_nest_expr = "/^\s*###MIXIN_NEST\((.*)\)###$/u";
+    $end_nest_expr = "/^\s*###END_NEST###$/u";
+    $mixin_point_expr = "/^\s*###MIXIN_POINT###$/u";
+    $interpolate_expr = "/\{\{\{(?:([\w!]*)\|)?(.*)\}\}\}/u";
+    $if_expr = "/^\s*###IF\((.*)\)###$/u";
+    $else_expr = "/^\s*###ELSE###$/u";
+    $endif_expr = "/^\s*###ENDIF###$/u";
     $buffer_stack = [""];
     $mixin_stack = [];
     $append = function($str) use(&$buffer_stack) {
@@ -96,7 +96,7 @@ function ensure_compiled($path, $compiled_path) {
     $compiled_dir = preg_replace("/\/$/", "", $compiled_dir); // remove trailing slash if present
     $compiled_dir .= "/views_compiled";
     if(!file_exists($compiled_dir)) { // file_exists actually works for directories too
-        $success = mkdir($compiled_dir);
+        $success = mkdir($compiled_dir, 700);
         if($success === false) {
             throw new ViewCompileException("Could not create directory: $compiled_dir");
         }

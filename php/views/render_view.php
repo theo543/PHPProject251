@@ -39,7 +39,7 @@ class View {
     public function callback() {
         return function() {
             $this->render();
-        };    
+        };
     }
 }
 

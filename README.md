@@ -9,4 +9,4 @@ Grupa 251.
 
 ## Setup
 
-Fișierul [apache/apache.conf](apache/apache.conf) trebuie inclus din configul principal Apache.
+Fișierul [apache.conf](apache.conf) trebuie inclus din configul principal Apache.
