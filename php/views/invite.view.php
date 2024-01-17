@@ -10,6 +10,7 @@
                 <label> Email: <input type="email" name="email" /> </label>
                 <input type="hidden" name="token" value="{{{$_GET["token"]}}}" />
                 {{{!|$recaptcha}}}
+                {{{!|$csrf()}}}
                 <input type="submit" value="Create account" />
             </form>
         ###ENDIF###

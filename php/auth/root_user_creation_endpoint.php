@@ -8,7 +8,7 @@ function root_user_creation_endpoint($username, $email, $password) {
         echo "Invalid password.";
         return;
     }
-    $db = connect_to_db();
+    $db = get_global_conn();
     $db->begin_transaction();
     $account = create_account($username, $email, $password, true, true, true, $db);
     if($account === null) {

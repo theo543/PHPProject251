@@ -1,22 +1,19 @@
 <?php
 
-function connect_to_db(): mysqli {
+function get_global_conn(): mysqli {
     static $DB_CONNECTION = null;
     if($DB_CONNECTION !== null) {
         return $DB_CONNECTION;
     }
+    mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
     $dblogininfo = require_once "dblogininfo.secrets.php";
-    $db = new mysqli("localhost", $dblogininfo["db_user"], $dblogininfo["db_pass"], $dblogininfo["db_name"]);
-    if($db->connect_errno) {
-        die("Failed to connect to MySQL: (" . $db->connect_errno . ") " . $db->connect_error);
-    }
-    $DB_CONNECTION = $db;
+    $DB_CONNECTION = new mysqli("localhost", $dblogininfo["db_user"], $dblogininfo["db_pass"], $dblogininfo["db_name"]);
     return $DB_CONNECTION;
 }
 
 function fetch_one($query, $params = [], $db = null) {
     if($db === null) {
-        $db = connect_to_db();
+        $db = get_global_conn();
     }
     $query = $db->prepare($query);
     $query->execute($params);
@@ -33,7 +30,7 @@ function fetch_one($query, $params = [], $db = null) {
 
 function fetch_all($query, $params = [], $db = null) {
     if($db === null) {
-        $db = connect_to_db();
+        $db = get_global_conn();
     }
     $query = $db->prepare($query);
     $query->execute($params);
@@ -48,18 +45,11 @@ function fetch_all($query, $params = [], $db = null) {
     return $rows;
 }
 
-function execute($query, $params = [], $db = null): int | null {
+function execute($query, $params = [], $db = null): int {
     if($db === null) {
-        $db = connect_to_db();
+        $db = get_global_conn();
     }
-    try {
-        $query = $db->prepare($query);
-        $result = $query->execute($params);
-    } catch(Exception $e) {
-        return null;
-    }
-    if($result === false) {
-        return null;
-    }
+    $query = $db->prepare($query);
+    $query->execute($params);
     return $db->affected_rows;
 }

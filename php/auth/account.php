@@ -30,7 +30,7 @@ function get_account(int $id): Account | null {
 
 function create_account(string $name, string $email, string $password, bool $is_admin, bool $is_editor, bool $is_author, mysqli | null $db = null): null | Account {
     if($db === null) {
-        $db = connect_to_db();
+        $db = get_global_conn();
     }
     $bcrypt_opts = [
         "cost" => 12,

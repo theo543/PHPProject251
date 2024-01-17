@@ -12,55 +12,62 @@ require_once "auth/login.php";
 require_once "auth/create_invite_link_endpoint.php";
 require_once "auth/csrf.php";
 
-$pre_auth = new Router;
-
-register_test_endpoints($pre_auth);
-
-$pre_auth_captcha_required = new Router;
-register_auth_endpoints($pre_auth_captcha_required);
-$pre_auth_captcha_required->add_post_interceptor(function(): bool {
-    if(!validate_post_request_recaptcha()) {
-        echo "Invalid captcha";
-        return true;
+$session = check_session();
+if($session === null) {
+    echo "new session...";
+    $sessionID = create_session(null);
+    if($sessionID === null) {
+        die("Failed to create session");
     }
-    return false;
-});
-$pre_auth->add_subrouter($pre_auth_captcha_required);
-
-if($pre_auth->run()) {
-    exit;
+    // Pre-auth session is needed to prevent login CSRF
+    // Assume the client will use the session cookie for the login/signup request
+    // (If they have cookies disabled they couldn't login anyway)
+    $session = new Session(null, $sessionID);
 }
 
-$validated_account = check_session();
+$csrf_gen = bind_generate_csrf_token($session);
 
-if($validated_account === null) {
-    header("Location: /auth");
-    exit;
-}
+$r = new Router;
+$r->set_view_param('csrf', $csrf_gen);
 
-$account = $validated_account->account;
-
-$post_auth = new Router;
-
-$csrf = bind_generate_csrf_token($validated_account->session_id, $account->id);
-
-register_logout_endpoints($post_auth, $csrf);
-$post_auth->get("/", view_with_account("index", $account)->set('csrf', $csrf)->callback());
-$post_auth->get("/create_invite_link", view("create_invite_link")->set('csrf', $csrf)->callback());
-$post_auth->post("/create_invite_link", fn() => create_invite_link_endpoint($account));
-$post_auth->add_post_interceptor(function() use ($validated_account, $account): bool {
-    if(!isset($_POST["csrf-token"]) || !isset($_POST["csrf-token-hmac"])) {
+$r->add_post_interceptor(function () use ($session): bool {
+    if (!isset($_POST["csrf-token"]) || !isset($_POST["csrf-token-hmac"])) {
         echo "Missing CSRF token";
         return true;
     }
-    if(!validate_csrf_token($validated_account->session_id, $account->id, $_POST["csrf-token"], $_POST["csrf-token-hmac"])) {
+    if (!validate_csrf_token($session, $_POST["csrf-token"], $_POST["csrf-token-hmac"])) {
         echo "Invalid CSRF token";
         return true;
     }
     return false;
 });
 
-if(!$post_auth->run()) {
+register_test_endpoints($r);
+register_auth_endpoints($r);
+
+$post_auth = new Router;
+if($session->account === null) {
+    $post_auth->add_interceptor(function() {
+        // They can't use these endpoints without an account,
+        // but if they try to we shouldn't just pretend they don't exist and 404
+        header("Location: /auth");
+        return true;
+    });
+}
+$account = $session->account;
+$post_auth->set_view_param('account', $account);
+register_logout_endpoints($post_auth);
+$post_auth->get("/", view("index"));
+$post_auth->get("/create_invite_link", view("create_invite_link"));
+$post_auth->post("/create_invite_link", fn() => create_invite_link_endpoint($account));
+
+$r->add_subrouter($post_auth);
+
+$r->all(null, function() {
     http_response_code(404);
     echo "404 Not Found";
+});
+
+if($r->run() === false) {
+    die("Router failed to run despite having a catch-all 404 route.");
 }

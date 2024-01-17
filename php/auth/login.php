@@ -1,6 +1,6 @@
 <?php
 
-require_once "views/render_view.php";
+require_once "views/View.php";
 require_once "auth/login_endpoint.php";
 require_once "auth/logout_endpoint.php";
 require_once "auth/root_user_creation_endpoint.php";
@@ -16,20 +16,29 @@ function get_debugmode() {
     return $debugmode;
 }
 
-function register_auth_endpoints(Router $r) {
-    $recaptcha = array('recaptcha' => get_recaptcha_html());
+function register_auth_endpoints(Router $router) {
+    $r = new Router;
+    $r->set_view_param('recaptcha', get_recaptcha_html());
     $r->post("/auth", fn() => login_endpoint());
-    $r->get("/auth", view("auth")->set_many($recaptcha)->callback());
+    $r->get("/auth", view("auth"));
     $debugmode = get_debugmode();
     if($debugmode["allow_root_create"]) {
         $r->post("/create_root_user", fn() => root_user_creation_endpoint($debugmode["username"], $debugmode["email"], $debugmode["password"]));
-        $r->get("/create_root_user", view("create_root_user")->callback());
+        $r->get("/create_root_user", view("create_root_user"));
     }
     $r->post("/invite", fn() => invite_endpoint());
-    $r->get("/invite", view("invite")->set_many($recaptcha)->callback());
+    $r->get("/invite", view("invite"));
+    $r->add_post_interceptor(function(): bool {
+        if(!validate_post_request_recaptcha()) {
+            echo "Invalid captcha";
+            return true;
+        }
+        return false;
+    });
+    $router->add_subrouter($r);
 }
 
-function register_logout_endpoints(Router $r, callable $csrf) {
-    $r->get("/logout", view("logout_full")->set('csrf', $csrf)->callback());
+function register_logout_endpoints(Router $r) {
+    $r->get("/logout", view("logout_full"));
     $r->post("/logout", fn() => logout_endpoint());
 }

@@ -17,22 +17,24 @@ function get_secret_csrf_key(): string {
     return $secret_key;
 }
 
-function generate_csrf_token(int $session_id, int $user_id, string|null $token = null): CSRFToken {
+function generate_csrf_token(Session $session, string|null $token = null): CSRFToken {
     if($token === null) {
         $token = bin2hex(random_bytes(32));
     }
-    $hmac_secret_key = implode(':', array(strval($session_id), strval($user_id), $token, get_secret_csrf_key()));
+    $session_id = $session->session_id;
+    $user_id = $session->account ? strval($session->account->id) : "NULL";
+    $hmac_secret_key = implode(':', array(strval($session_id), $user_id, $token, get_secret_csrf_key()));
     $token_hmac = hash_hmac("sha256", $token, $hmac_secret_key, false);
     return new CSRFToken($token, $token_hmac);
 }
 
-function validate_csrf_token(int $session_id, int $user_id, string $token, string $token_hmac): bool {
-    return hash_equals($token_hmac, generate_csrf_token($session_id, $user_id, $token)->token_hmac);
+function validate_csrf_token(Session $session, string $token, string $token_hmac): bool {
+    return hash_equals($token_hmac, generate_csrf_token($session, $token)->token_hmac);
 }
 
-function bind_generate_csrf_token(int $session_id, int $user_id): callable {
-    return function(string|null $token = null) use ($session_id, $user_id): string {
-        $csrf_token = generate_csrf_token($session_id, $user_id, $token);
+function bind_generate_csrf_token(Session $session): callable {
+    return function(string|null $token = null) use ($session): string {
+        $csrf_token = generate_csrf_token($session, $token);
         return '<input type="hidden" name="csrf-token" value="' . $csrf_token->token . '">'
             .  '<input type="hidden" name="csrf-token-hmac" value="' . $csrf_token->token_hmac . '">';
     };

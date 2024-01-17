@@ -10,7 +10,7 @@ CREATE TABLE `users` (
 
 CREATE TABLE `sessions` (
   `session_id` int PRIMARY KEY AUTO_INCREMENT,
-  `user_id` int NOT NULL,
+  `user_id` int,
   `token` binary(255) NOT NULL,
   `expiry` timestamp
 );

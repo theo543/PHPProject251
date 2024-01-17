@@ -35,18 +35,6 @@ class View {
         extract($this->view_data);
         require $compiled;
     }
-
-    public function callback() {
-        return function() {
-            $this->render();
-        };
-    }
-}
-
-function view_with_account(string $view_name, Account $account): View {
-    $view = new View($view_name);
-    $view->set("account", $account);
-    return $view;
 }
 
 function view(string $view_name): View {

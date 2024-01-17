@@ -13,7 +13,7 @@ function invite_endpoint() {
         return;
     }
     $token = base64_decode($_POST["token"]);
-    $db = connect_to_db();
+    $db = get_global_conn();
     $db->begin_transaction();
     $row = fetch_one("SELECT author, editor, admin FROM invite_tokens WHERE token = ?", [$token], $db);
     if($row === null) {

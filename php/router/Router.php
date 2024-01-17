@@ -1,11 +1,11 @@
 <?php
 
 class Route {
-    public string | null $kind;
-    public string $path;
+    public ?string $kind;
+    public ?string $path;
     public $callback;
 
-    public function __construct(string | null $kind, string $path, callable $callback) {
+    public function __construct(?string $kind, ?string $path, View|callable $callback) {
         $this->kind = $kind;
         $this->path = $path;
         $this->callback = $callback;
@@ -13,6 +13,7 @@ class Route {
 }
 
 class Router {
+    private array $view_params = [];
     private array $interceptors = [];
     private array $routes = [];
     private function run_interceptors(): bool {
@@ -23,17 +24,17 @@ class Router {
         }
         return false;
     }
-    public function match_route(string | null $kind, string $path, callable $callback): void {
+    public function match_route(?string $kind, ?string $path, View|callable $callback): void {
         $route = new Route($kind, $path, $callback);
         array_push($this->routes, $route);
     }
-    public function get(string $path, callable $callback): void {
+    public function get(?string $path, View|callable $callback): void {
         $this->match_route("GET", $path, $callback);
     }
-    public function post(string $path, callable $callback): void {
+    public function post(?string $path, View|callable $callback): void {
         $this->match_route("POST", $path, $callback);
     }
-    public function all(string $path, callable $callback): void {
+    public function all(?string $path, View|callable $callback): void {
         $this->match_route(null, $path, $callback);
     }
     public function add_subrouter(Router $subrouter): void {
@@ -50,14 +51,17 @@ class Router {
             return $interceptor();
         });
     }
-    public function run(): bool {
+    public function set_view_param(string $key, $value): void {
+        $this->view_params[$key] = $value;
+    }
+    public function run(array $extra_view_params = array()): bool {
         $request_path = strtok($_SERVER["REQUEST_URI"], '?');
         foreach($this->routes as $route) {
             if($route instanceof Router) {
                 if($this->run_interceptors()) {
                     return true;
                 }
-                if($route->run()) {
+                if($route->run(array_merge($this->view_params, $extra_view_params))) {
                     return true;
                 }
                 continue;
@@ -65,13 +69,19 @@ class Router {
             if(($route->kind !== null) && $_SERVER["REQUEST_METHOD"] !== $route->kind) {
                 continue;
             }
-            if($request_path != $route->path) {
+            if($route->path !== null && $request_path !== $route->path) {
                 continue;
             }
             if($this->run_interceptors()) {
                 return true;
             }
-            ($route->callback)();
+            if($route->callback instanceof View) {
+                $route->callback->set_many($this->view_params);
+                $route->callback->set_many($extra_view_params);
+                $route->callback->render();
+            } else {
+                ($route->callback)();
+            }
             return true;
         }
         return false;
