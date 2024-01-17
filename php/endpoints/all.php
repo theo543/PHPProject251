@@ -2,10 +2,10 @@
 declare(strict_types=1);
 
 require_once "views/View.php";
-require_once "auth/login_endpoint.php";
-require_once "auth/logout_endpoint.php";
-require_once "auth/root_user_creation_endpoint.php";
-require_once "auth/invite_endpoint.php";
+require_once "endpoints/login_endpoint.php";
+require_once "endpoints/logout_endpoint.php";
+require_once "endpoints/root_user_creation_endpoint.php";
+require_once "endpoints/invite_endpoint.php";
 require_once "load_config_file.php";
 require_once "auth/recaptcha.php";
 
@@ -43,3 +43,10 @@ function register_logout_endpoints(Router $r): void {
     $r->get("/logout", view("logout_full"));
     $r->post("/logout", fn() => logout_endpoint());
 }
+
+require_once "endpoints/create_invite_link_endpoint.php";
+require_once "endpoints/invite_endpoint.php";
+require_once "endpoints/login_endpoint.php";
+require_once "endpoints/logout_endpoint.php";
+require_once "endpoints/root_user_creation_endpoint.php";
+require_once "endpoints/test_endpoints.php";

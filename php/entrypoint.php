@@ -8,9 +8,7 @@ header("Cache-Control: post-check=0, pre-check=0", false);
 header("Pragma: no-cache");
 
 require_once "router/Router.php";
-require_once "test_endpoints.php";
-require_once "auth/login.php";
-require_once "auth/create_invite_link_endpoint.php";
+require_once "endpoints/all.php";
 require_once "auth/csrf.php";
 
 $session = check_session();
