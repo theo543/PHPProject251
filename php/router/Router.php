@@ -25,6 +25,11 @@ class Router {
         }
         return false;
     }
+    private function render_view_with_args(View $view, $extra_view_params): void {
+        $view->set_many($this->view_params);
+        $view->set_many($extra_view_params);
+        $view->render();
+    }
     public function match_route(?string $kind, ?string $path, View|callable $callback): void {
         $route = new Route($kind, $path, $callback);
         array_push($this->routes, $route);
@@ -77,11 +82,12 @@ class Router {
                 return true;
             }
             if($route->callback instanceof View) {
-                $route->callback->set_many($this->view_params);
-                $route->callback->set_many($extra_view_params);
-                $route->callback->render();
+                $this->render_view_with_args($route->callback, $extra_view_params);
             } else {
-                ($route->callback)();
+                $ret = ($route->callback)();
+                if($ret instanceof View) {
+                    $this->render_view_with_args($ret, $extra_view_params);
+                }
             }
             return true;
         }

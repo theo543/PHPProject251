@@ -8,6 +8,7 @@ require_once "endpoints/root_user_creation_endpoint.php";
 require_once "endpoints/invite_endpoint.php";
 require_once "load_config_file.php";
 require_once "auth/recaptcha.php";
+require_once "endpoints/post_display_endpoint.php";
 
 function get_debugmode() {
     static $debugmode = null;

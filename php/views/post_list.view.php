@@ -1,5 +1,5 @@
 <IF ESC='isset($_GET["author_id"])'>
-    <p>Showing posts filtered by author:</p>
+    <p>Showing posts filtered by author <a href="/">(back to all posts)</a>:</p>
 <ELSE/>
     <p>Showing all posts:</p>
 </IF>
