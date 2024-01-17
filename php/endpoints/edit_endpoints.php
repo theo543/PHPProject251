@@ -120,7 +120,19 @@ function get_approve(Account $account): null|View {
     return $view;
 }
 
-function register_edit_endpoints(Router $r, Account $account): void {
+function register_edit_endpoints(Router $r, null|Account $account): void {
+    if($account === null) {
+        $deny = function() {
+            echo "You must be logged in.";
+            return;
+        };
+        // Won't get run anyways because of the interceptor
+        // Add these so the user gets redirected to /auth instead of 404
+        $r->get("/edit", $deny);
+        $r->post("/edit", $deny);
+        $r->get("/approve_edit", $deny);
+        $r->post("/approve_edit", $deny);
+    }
     $r->get("/edit", fn() => get_edit_endpoint($account));
     $r->post("/edit", fn() => post_edit_endpoint($account));
     $r->get("/approve_edit", fn() => get_approve($account));
