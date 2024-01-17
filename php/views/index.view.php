@@ -11,5 +11,13 @@
         </IF>
         <hr>
         <MIXIN post_list/>
+        <footer>
+            <p>Admin contact</p>
+            <form action="/mail_admin" method="post">
+                {{{!|$csrf()}}}
+                <textarea name="message" rows="5" cols="40"></textarea>
+                <input type="submit" value="Send">
+            </form>
+        </footer>
     </body>
 </MIXIN_NEST>
