@@ -9,6 +9,7 @@ require_once "endpoints/invite_endpoint.php";
 require_once "load_config_file.php";
 require_once "auth/recaptcha.php";
 require_once "endpoints/post_display_endpoint.php";
+require_once "endpoints/edit_endpoints.php";
 
 function get_debugmode() {
     static $debugmode = null;

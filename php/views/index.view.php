@@ -4,7 +4,10 @@
         <p>Hi, user {{{$account->name}}}!</p>
         <MIXIN logout/>
         <IF $account->is_admin>
-            <a href="/create_invite_link">Create invite link</a>
+            <p><a href="/create_invite_link">Create invite link</a></p>
+        </IF>
+        <IF $account->is_author>
+            <p><a href="/edit">Create a post</a></p>
         </IF>
         <hr>
         <MIXIN post_list/>

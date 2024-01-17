@@ -24,13 +24,20 @@ Table posts {
     title varchar(255) [not null]
     content text [not null]
     author_id int [not null]
-    is_published boolean [not null, default: false]
     published_at timestamp
     created_at timestamp [not null]
     updated_at timestamp [not null]
 }
 
 Ref: posts.author_id > users.user_id
+
+Table pending_edits {
+    post_id int [primary key, increment]
+    title varchar(255) [not null]
+    content text [not null]
+}
+
+Ref: pending_edits.post_id > posts.post_id [delete: cascade]
 
 Table invite_tokens {
     token_id int [primary key, increment]

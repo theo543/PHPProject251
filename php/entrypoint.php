@@ -59,6 +59,7 @@ $post_auth->set_view_param('account', $account);
 $post_auth->set_view_param('post_list', fn() => post_list());
 register_logout_endpoints($post_auth);
 register_post_display_endpoint($r);
+register_edit_endpoints($r, $account);
 $post_auth->get("/", view("index"));
 $post_auth->get("/create_invite_link", view("create_invite_link"));
 $post_auth->post("/create_invite_link", fn() => create_invite_link_endpoint($account));
