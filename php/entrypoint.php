@@ -10,6 +10,7 @@ header("Pragma: no-cache");
 require_once "router/Router.php";
 require_once "endpoints/all.php";
 require_once "auth/csrf.php";
+require_once "posts/list.php";
 
 $session = check_session();
 if($session === null) {
@@ -55,6 +56,7 @@ if($session->account === null) {
 }
 $account = $session->account;
 $post_auth->set_view_param('account', $account);
+$post_auth->set_view_param('post_list', fn() => post_list());
 register_logout_endpoints($post_auth);
 $post_auth->get("/", view("index"));
 $post_auth->get("/create_invite_link", view("create_invite_link"));

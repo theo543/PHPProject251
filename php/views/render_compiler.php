@@ -29,10 +29,12 @@ function compile_view(string $path, string $mixin_nested_view = "", string|null 
     $begin_nest_expr = "{^\s*<MIXIN_NEST (.*)>$}u";
     $end_nest_expr = "{^\s*</MIXIN_NEST>$}u";
     $mixin_point_expr = "{^\s*<MIXIN_POINT/>$}u";
-    $interpolate_expr = "{\{\{\{(?:([\w!]*)\|)?(.*)\}\}\}}u";
+    $interpolate_expr = "{\{\{\{(?:([\w!]*?)\|)?(.*?)\}\}\}}u";
     $if_expr = "{^\s*<IF (.*)>$}u";
     $else_expr = "{^\s*<ELSE/>$}u";
     $endif_expr = "{^\s*</IF>$}u";
+    $for_expr = "{^\s*<FOR (.*)>$}u";
+    $endfor_expr = "{^\s*</FOR>$}u";
     $buffer_stack = [""];
     $mixin_stack = [];
     $append = function($str) use(&$buffer_stack) {
@@ -76,6 +78,11 @@ function compile_view(string $path, string $mixin_nested_view = "", string|null 
             }
         } else if(preg_match($mixin_point_expr, $line)) {
             $append($mixin_nested_view);
+        } else if(preg_match($for_expr, $line, $matches)) {
+            $iter = remove_esc($matches[1]);
+            $append("<?php foreach($iter)" . ": ?>");
+        } else if(preg_match($endfor_expr, $line)) {
+            $append("<?php endforeach; ?>");
         } else {
             $line = preg_replace_callback($interpolate_expr, function(array $matches) use ($linenum) {
                 $interp_flag = $matches[1];
