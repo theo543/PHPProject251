@@ -11,7 +11,7 @@ function post_edit_endpoint(Account $account): void {
     }
     $post_id = intval($_POST['post_id']);
     $title = $_POST['title'];
-    $content = $_POST['post_id'];
+    $content = $_POST['content'];
     $query = "";
     $args = [];
     if($post_id == 0) {
