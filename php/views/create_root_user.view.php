@@ -1,5 +1,5 @@
-###MIXIN_NEST(base)###
-    ###MIXIN(header)###
+<MIXIN_NEST base>
+    <MIXIN header/>
     <body>
         <form action="/create_root_user" method="post">
             <p> Note: this form is controlled by a file stored on the server to allow the creation of an initial root user. </p>
@@ -10,4 +10,4 @@
             <input type="submit" value="Create root user" />
         </form>
     </body>
-###END_NEST###
+</MIXIN_NEST>

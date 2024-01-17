@@ -1,9 +1,9 @@
-###MIXIN_NEST(base)###
-    ###MIXIN(header)###
+<MIXIN_NEST base>
+    <MIXIN header/>
     <body>
-        ###IF(!$_GET["token"])###
+        <IF ESC='!isset($_GET["token"])'>
             Invite link is required.
-        ###ELSE###
+        <ELSE/>
             <form action="/invite" method="post">
                 <label> Name: <input type="text" name="username" /> </label>
                 <label> Password: <input type="password" name="password" /> </label>
@@ -13,6 +13,6 @@
                 {{{!|$csrf()}}}
                 <input type="submit" value="Create account" />
             </form>
-        ###ENDIF###
+        </IF>
     </body>
-###END_NEST###
+</MIXIN_NEST>

@@ -7,6 +7,15 @@ class ViewCompileException extends RuntimeException {
     }
 }
 
+function remove_esc(string $str): string {
+    $escape_expr = "{^\s*ESC='(.*)'$}u";
+    if(preg_match($escape_expr, $str, $matches)) {
+        return $matches[1];
+    } else {
+        return $str;
+    }
+}
+
 function compile_view(string $path, string $mixin_nested_view = "", string|null $parent_view_path = null): string {
     if(!preg_match("/\.view\.php$/", $path)) {
         if($parent_view_path !== null) {
@@ -16,14 +25,14 @@ function compile_view(string $path, string $mixin_nested_view = "", string|null 
             throw new ViewCompileException("Attempted to import extensionless file: '$path' despite not having a parent view path for relative imports.");
         }
     }
-    $mixin_expr = "/^\s*###MIXIN\((.*)\)###$/u";
-    $begin_nest_expr = "/^\s*###MIXIN_NEST\((.*)\)###$/u";
-    $end_nest_expr = "/^\s*###END_NEST###$/u";
-    $mixin_point_expr = "/^\s*###MIXIN_POINT###$/u";
-    $interpolate_expr = "/\{\{\{(?:([\w!]*)\|)?(.*)\}\}\}/u";
-    $if_expr = "/^\s*###IF\((.*)\)###$/u";
-    $else_expr = "/^\s*###ELSE###$/u";
-    $endif_expr = "/^\s*###ENDIF###$/u";
+    $mixin_expr = "{^\s*<MIXIN (.*)/>$}u";
+    $begin_nest_expr = "{^\s*<MIXIN_NEST (.*)>$}u";
+    $end_nest_expr = "{^\s*</MIXIN_NEST>$}u";
+    $mixin_point_expr = "{^\s*<MIXIN_POINT/>$}u";
+    $interpolate_expr = "{\{\{\{(?:([\w!]*)\|)?(.*)\}\}\}}u";
+    $if_expr = "{^\s*<IF (.*)>$}u";
+    $else_expr = "{^\s*<ELSE/>$}u";
+    $endif_expr = "{^\s*</IF>$}u";
     $buffer_stack = [""];
     $mixin_stack = [];
     $append = function($str) use(&$buffer_stack) {
@@ -37,14 +46,15 @@ function compile_view(string $path, string $mixin_nested_view = "", string|null 
     while($line = fgets($file)) {
         $linenum++;
         if(preg_match($if_expr, $line, $matches)) {
-            $append("<?php if($matches[1]): ?>");
+            $cond = remove_esc($matches[1]);
+            $append("<?php if($cond): ?>");
         } else if(preg_match($else_expr, $line)) {
             $append("<?php else: ?>");
         } else if(preg_match($endif_expr, $line)) {
             $append("<?php endif; ?>");
         } else if(preg_match($begin_nest_expr, $line, $matches)) {
             array_push($buffer_stack, "");
-            array_push($mixin_stack, $matches[1]);
+            array_push($mixin_stack, remove_esc($matches[1]));
         } else if(preg_match($end_nest_expr, $line)) {
             if(count($buffer_stack) === 1) {
                 throw new ViewCompileException("Unmatched ###END_NEST### at line $linenum");
@@ -59,7 +69,7 @@ function compile_view(string $path, string $mixin_nested_view = "", string|null 
             }
         } else if(preg_match($mixin_expr, $line, $matches)) {
             try {
-                $imported_view_name = $matches[1];
+                $imported_view_name = remove_esc($matches[1]);
                 $append(compile_view($imported_view_name, "", $path));
             } catch(ViewCompileException $e) {
                 throw new ViewCompileException("Error compiling imported view '$imported_view_name' at line $linenum: " . $e->getMessage());

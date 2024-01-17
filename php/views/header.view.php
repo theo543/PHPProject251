@@ -1,13 +1,13 @@
 <head>
     <meta charset="UTF-8">
-    ###IF(isset($title))###
+    <IF isset($title)>
         <title>{{{$title}}}</title>
-    ###ELSE###
+    <ELSE/>
         <title>PHP Project</title>
-    ###ENDIF###
+    </IF>
     <!-- <link rel="stylesheet" href="/css/style.css" /> TODO style website -->
-    ###IF(isset($recaptcha))###
+    <IF isset($recaptcha)>
         <script src="https://www.google.com/recaptcha/api.js" async defer></script>
-    ###ENDIF###
-    ###MIXIN_POINT###
+    </IF>
+    <MIXIN_POINT/>
 </head>

@@ -1,5 +1,5 @@
-###MIXIN_NEST(base)###
-    ###MIXIN(header)###
+<MIXIN_NEST base>
+    <MIXIN header/>
     <body>
         <form action="/create_invite_link" method="post">
             <p> Create an invite link to allow others to create accounts. </p>
@@ -10,4 +10,4 @@
             <input type="submit" value="Create invite link" />
         </form>
     </body>
-###END_NEST###
+</MIXIN_NEST>

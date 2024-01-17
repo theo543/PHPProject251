@@ -1,5 +1,5 @@
-###MIXIN_NEST(base)###
-    ###MIXIN(header)###
+<MIXIN_NEST base>
+    <MIXIN header/>
     <body>
         <form action="/auth" method="post">
             <label>User name: <input type="text" name="username" /></label>
@@ -9,4 +9,4 @@
             <input type="submit" value="Authenticate" />
         </form>
     </body>
-###END_NEST###
+</MIXIN_NEST>

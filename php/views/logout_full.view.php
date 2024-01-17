@@ -1,6 +1,6 @@
-###MIXIN_NEST(base)###
-    ###MIXIN(header)###
+<MIXIN_NEST base>
+    <MIXIN header/>
     <body>
-        ###MIXIN(logout)###
+        <MIXIN logout/>
     </body>
-###END_NEST###
+</MIXIN_NEST>
