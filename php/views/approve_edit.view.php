@@ -6,11 +6,11 @@
             {{{!|$csrf()}}}
             <input type="submit" value="Approve edit">
         </form>
-        <p>Previous post <b>{{{$prev_title}}}</b></p>
+        <h1>Previous post: <em>{{{$prev_title}}}</em></h1>
         <p>
         {{{!|$compile_prev_content()}}}
         </p>
-        <p>New post <b>{{{$title}}}</b></p>
+        <h1>New post: <em>{{{$title}}}</em></h1>
         <p>
         {{{!|$compile_content()}}}
         </p>

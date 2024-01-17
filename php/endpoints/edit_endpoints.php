@@ -104,7 +104,7 @@ function get_approve(Account $account): null|View {
     }
     $post_id = intval($_GET['post_id']);
     $post = fetch_one("
-    SELECT posts.post_id AS post_id, posts.content AS content, posts.title AS title, pe.title AS prev_title, pe.content AS prev_content
+    SELECT posts.post_id AS post_id, posts.content AS prev_content, posts.title AS prev_title, pe.title AS title, pe.content AS content
     FROM posts
     JOIN pending_edits pe on posts.post_id = pe.post_id
     WHERE posts.post_id = ?
