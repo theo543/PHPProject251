@@ -47,7 +47,7 @@ function compile_post(string $content): string {
             $end_elem();
             $buffer .= headings($line);
         } else if($elem_end !== null && !str_starts_with($line, '*') && $line !== '') {
-            $buffer .= post_esc($line);
+            $buffer .= post_esc(" " . $line);
         } else if(preg_match($list_expr, $line, $matches)) {
             $end_elem();
             if($list_indent == 0) {
