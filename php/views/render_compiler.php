@@ -97,7 +97,7 @@ function ensure_compiled($path, $compiled_path): void {
     $compiled_dir = preg_replace("/\/$/", "", $compiled_dir); // remove trailing slash if present
     $compiled_dir .= "/views_compiled";
     if(!file_exists($compiled_dir)) { // file_exists actually works for directories too
-        $success = mkdir($compiled_dir, 700);
+        $success = mkdir($compiled_dir, 0700);
         if($success === false) {
             throw new ViewCompileException("Could not create directory: $compiled_dir");
         }
