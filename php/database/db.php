@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 function get_global_conn(): mysqli {
     static $DB_CONNECTION = null;
@@ -11,7 +12,7 @@ function get_global_conn(): mysqli {
     return $DB_CONNECTION;
 }
 
-function fetch_one($query, $params = [], $db = null) {
+function fetch_one($query, $params = [], $db = null): array|null {
     if($db === null) {
         $db = get_global_conn();
     }
@@ -28,7 +29,7 @@ function fetch_one($query, $params = [], $db = null) {
     return $row;
 }
 
-function fetch_all($query, $params = [], $db = null) {
+function fetch_all($query, $params = [], $db = null): ?array {
     if($db === null) {
         $db = get_global_conn();
     }

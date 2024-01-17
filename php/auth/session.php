@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 require_once "database/db.php";
 require_once "auth/account.php";
@@ -45,6 +46,7 @@ function create_session(int|null $user_id): int|null {
     if($user_id === null) {
         $result = execute("INSERT INTO sessions (user_id, token, expiry) VALUES (NULL, ?, DATE_ADD(NOW(), INTERVAL 1 DAY))", [$token]);
     } else {
+        $user_id = strval($user_id);
         $result = execute("INSERT INTO sessions (user_id, token, expiry) VALUES (?, ?, DATE_ADD(NOW(), INTERVAL 1 DAY))", [$user_id, $token]);
     }
     if($result === 0) {
@@ -62,5 +64,5 @@ function create_session(int|null $user_id): int|null {
 
 function end_session(int|null $user_id, string $token): bool {
     $success = execute("DELETE FROM sessions WHERE user_id = ? AND token = FROM_BASE64(?)", [$user_id, $token]);
-    return $success !== null && $success !== 0;
+    return $success !== 0;
 }

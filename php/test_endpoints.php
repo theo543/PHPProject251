@@ -1,8 +1,9 @@
 <?php
+declare(strict_types=1);
 
 require_once "router/Router.php";
 
-function register_test_endpoints(Router $r) {
+function register_test_endpoints(Router $r): void {
     $r->get("/ping_php_router_get", function() {
         echo "Hello from the PHP router GET endpoint!<br>";
     });

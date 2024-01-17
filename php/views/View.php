@@ -1,11 +1,12 @@
 <?php
+declare(strict_types=1);
 
 require_once "auth/recaptcha.php";
 require_once "views/render_compiler.php";
 
 class View {
-    private $view_name;
-    private $view_data;
+    private string $view_name;
+    private array $view_data;
 
     public function __construct(string $view_name) {
         $this->view_name = $view_name;

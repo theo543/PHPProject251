@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 require_once "load_config_file.php";
 

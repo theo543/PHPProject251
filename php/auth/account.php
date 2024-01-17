@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 require_once "database/db.php";
 
@@ -25,7 +26,7 @@ function get_account(int $id): Account | null {
     if($row === null) {
         return null;
     }
-    return new Account($row["user_id"], $row["name"], $row["email"], $row["is_admin"], $row["is_editor"], $row["is_author"]);
+    return new Account($row["user_id"], $row["name"], $row["email"], !!$row["is_admin"], !!$row["is_editor"], !!$row["is_author"]);
 }
 
 function create_account(string $name, string $email, string $password, bool $is_admin, bool $is_editor, bool $is_author, mysqli | null $db = null): null | Account {
@@ -39,10 +40,7 @@ function create_account(string $name, string $email, string $password, bool $is_
     function btoi(bool $b): int {
         return $b ? 1 : 0;
     }
-    $result = execute("INSERT INTO users (name, email, bcrypt_password, is_admin, is_editor, is_author) VALUES (?, ?, ?, ?, ?, ?)", [$name, $email, $bcrypt_password, btoi($is_admin), btoi($is_editor), btoi($is_author)], $db);
-    if($result === null) {
-        return null;
-    }
+    execute("INSERT INTO users (name, email, bcrypt_password, is_admin, is_editor, is_author) VALUES (?, ?, ?, ?, ?, ?)", [$name, $email, $bcrypt_password, btoi($is_admin), btoi($is_editor), btoi($is_author)], $db);
     $id = fetch_one("SELECT LAST_INSERT_ID() AS id", [], $db);
     if($id === null) {
         return null;

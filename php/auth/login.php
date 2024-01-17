@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 require_once "views/View.php";
 require_once "auth/login_endpoint.php";
@@ -16,7 +17,7 @@ function get_debugmode() {
     return $debugmode;
 }
 
-function register_auth_endpoints(Router $router) {
+function register_auth_endpoints(Router $router): void {
     $r = new Router;
     $r->set_view_param('recaptcha', get_recaptcha_html());
     $r->post("/auth", fn() => login_endpoint());
@@ -38,7 +39,7 @@ function register_auth_endpoints(Router $router) {
     $router->add_subrouter($r);
 }
 
-function register_logout_endpoints(Router $r) {
+function register_logout_endpoints(Router $r): void {
     $r->get("/logout", view("logout_full"));
     $r->post("/logout", fn() => logout_endpoint());
 }

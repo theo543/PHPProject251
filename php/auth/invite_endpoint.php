@@ -1,9 +1,10 @@
 <?php
+declare(strict_types=1);
 
 require_once "database/db.php";
 require_once "auth/account.php";
 
-function invite_endpoint() {
+function invite_endpoint(): void {
     if(!isset($_POST["token"])) {
         echo "Missing token.";
         return;
@@ -22,12 +23,12 @@ function invite_endpoint() {
         return;
     }
     $result = execute("DELETE FROM invite_tokens WHERE token = ?", [$token], $db);
-    if($result === null || $result === 0) {
+    if($result === 0) {
         echo "Invalid token.";
         $db->rollback();
         return;
     }
-    $account = create_account($_POST["username"], $_POST["email"], $_POST["password"], $row["admin"], $row["editor"], $row["author"], $db);
+    $account = create_account($_POST["username"], $_POST["email"], $_POST["password"], !!$row["admin"], !!$row["editor"], !!$row["author"], $db);
     if($account === null) {
         echo "Could not create account.";
         $db->rollback();

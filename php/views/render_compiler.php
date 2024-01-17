@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 class ViewCompileException extends RuntimeException {
     public function __construct(string $message) {
@@ -6,7 +7,7 @@ class ViewCompileException extends RuntimeException {
     }
 }
 
-function compile_view(string $path, string $mixin_nested_view = "", string|null $parent_view_path = null) {
+function compile_view(string $path, string $mixin_nested_view = "", string|null $parent_view_path = null): string {
     if(!preg_match("/\.view\.php$/", $path)) {
         if($parent_view_path !== null) {
             // imports are relative to the parent view
@@ -91,7 +92,7 @@ function compile_view(string $path, string $mixin_nested_view = "", string|null 
     return $buffer_stack[0];
 }
 
-function ensure_compiled($path, $compiled_path) {
+function ensure_compiled($path, $compiled_path): void {
     $compiled_dir = sys_get_temp_dir();
     $compiled_dir = preg_replace("/\/$/", "", $compiled_dir); // remove trailing slash if present
     $compiled_dir .= "/views_compiled";

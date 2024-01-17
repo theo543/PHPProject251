@@ -1,9 +1,10 @@
 <?php
+declare(strict_types=1);
 
 require_once "auth/account.php";
 require_once "auth/session.php";
 
-function root_user_creation_endpoint($username, $email, $password) {
+function root_user_creation_endpoint($username, $email, $password): void {
     if(!isset($_POST["password"]) || $_POST["password"] !== $password) {
         echo "Invalid password.";
         return;

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 class ConfigurationException extends RuntimeException {
     public function __construct(string $message) {
