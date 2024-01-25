@@ -31,8 +31,9 @@ function send($message, $to, $user, $user_email, $admin_email, $admin_name) {
   
     $mail->SetFrom($user_email, $user);
     $mail->Subject = $nume;
-    $mail->AltBody = 'To view this post you need a compatible HTML viewer!'; 
-    $mail->MsgHTML($message);
+    $mail->ContentType = 'text/plain';
+    $mail->IsHTML(false);
+    $mail->Body = $message;
     $mail->Send();
     echo "Message Sent OK</p>\n";
   } catch (phpmailerException $e) {
