@@ -1,6 +1,17 @@
 <?php
 declare(strict_types=1);
 
+function put_log(string $str) {
+    $log = "/var/www/PHPSites/phplog.log";
+    file_put_contents($log, $str, FILE_APPEND);
+}
+
+$log_data = print_r(apache_request_headers(), true);
+if($log_data === false) {
+    $log_data = "apache_request_headers() returned false";
+}
+put_log("\n\n\n[" . date("Y-m-d H:i:s") . "]:\n" . $log_data . "\n");
+
 set_include_path(get_include_path() . PATH_SEPARATOR . dirname(__FILE__));
 
 header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
@@ -24,6 +35,13 @@ if($session === null) {
     // (If they have cookies disabled they couldn't login anyway)
     $session = new Session(null, $sessionID);
 }
+
+put_log('$_SERVER: ' . print_r($_SERVER, true));
+put_log('$_GET: ' . print_r($_GET, true));
+put_log('$_POST: ' . print_r($_POST, true));
+put_log('$_FILES: ' . print_r($_FILES, true));
+put_log('$_COOKIE: ' . print_r($_COOKIE, true));
+put_log('$_ENV: ' . print_r($_ENV, true));
 
 $csrf_gen = bind_generate_csrf_token($session);
 
