@@ -1,0 +1,7 @@
+php/phpmailer/**/* linguist-vendored
+
+# Linguist doesn't support custom languages, so just call it HTML
+php/views/*.view.php linguist-language=HTML
+
+# Technically this is generated from DBML, but that isn't supported, so detect this file instead
+db_design.sql linguist-language=SQL linguist-detectable
